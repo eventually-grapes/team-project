@@ -19,14 +19,6 @@ This contract sets out shared expectations and commitments for how our team will
 * Respectful and inclusive behaviours should include listening to others' ideas, trying to help if someone is really stuck on something, and making sure you aren't interfering or conflicting with others' contributions.
 
 ---
-
-### [Other Categories of norms and expectations go here]
-
-* Based on your previous teamwork experiences, what other behaviours do you agree upon as a team?
-    - some examples of possible additional team norms and expectations are included in the sample team contract in case your team needs some help getting ideas for what else you want to include.
-
----
-
 ## Decision Making
 
 * Decisions will be made by majority vote after discussions to ensure everyone's ideas are fully heard first.
@@ -49,6 +41,6 @@ This contract sets out shared expectations and commitments for how our team will
 By signing below, we acknowledge that we have read, discussed, and agreed to these terms. We understand that this contract is binding for the duration of the course and may be revised with the agreement of all team members.
 
 Team Member Signatures:
-
+Damon
 
 
