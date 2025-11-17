@@ -7,7 +7,7 @@ import javax.swing.*;
 public class Main {
 final static int WINDOW_SIZE_WIDTH = 1920;
 final static int WINDOW_SIZE_HEIGHT = 1080;
-private static Color BG_COLOR = new Color(000,000,000); // could add another one called element/ foreground color
+private static Color BG_COLOR = new Color(0,000,000); // could add another one called element/ foreground color
 private static JFrame frame;  
 
     public static void swtitchTheme(){
@@ -39,21 +39,24 @@ private static JFrame frame;
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
         itemPanel.setBackground(BG_COLOR);
-        JScrollPane scrollPane = new JScrollPane(itemPanel);
-        scrollPane.setBorder(null);
         
         // TEXT INPUT
         JTextField inputField = new JTextField();
         inputField.setPreferredSize(new Dimension(0, 40));
 
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JList<String> itemList = new JList<>(listModel);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(itemList);
+        scrollPane.setBorder(null);
+        itemPanel.add(scrollPane);
+
         // Add message at the bottom
         inputField.addActionListener(e -> {
             String text = inputField.getText().trim();
             if (!text.isEmpty()) {
-                JLabel item = new JLabel(text);
-                item.setForeground(Color.WHITE);
-
-                itemPanel.add(item);  // ← ADD AT END (BOTTOM)
+                listModel.addElement(text);
+                
                 itemPanel.revalidate();
                 itemPanel.repaint();
 
