@@ -5,7 +5,7 @@ public class TierList{
 
     public TierList(){
          // only adds first tier in by default
-        this.tiers = new Hashmap<Integer, Tier>();
+        this.tiers = new HashMap<Integer, Tier>();
         this.tiers.put(0, new Tier(new ItemList(), "000,000,000", "S"));
     }
     public static void addTier(Tier tier){}
