@@ -10,4 +10,8 @@ public class ItemList {
     public static void removeItem(Item item){
         // remove item by searching for it
     }
+    public static Item searchItems(String name){
+        // search for the items name and return it
+    return new Item("a"); // placeholder line
+    }
 }

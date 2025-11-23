@@ -9,6 +9,7 @@ final static int WINDOW_SIZE_WIDTH = 1920;
 final static int WINDOW_SIZE_HEIGHT = 1080;
 private static Color BG_COLOR = new Color(0,000,000); // could add another one called element/ foreground color
 private static JFrame frame;  
+private static Object selected; // will be used for anything currently selected by the user at any given time
 
     public static void swtitchTheme(){
         BG_COLOR = new Color(111,111,111);
@@ -51,10 +52,14 @@ private static JFrame frame;
         scrollPane.setBorder(null);
         itemPanel.add(scrollPane);
 
-        // Add message at the bottom
+        // Add message at the bottom and create item object and item list
+        ItemList items = new ItemList();
+
         inputField.addActionListener(e -> {
             String text = inputField.getText().trim();
             if (!text.isEmpty()) {
+                Item item = new Item(text);
+                //items.addItem(item); Uncomment when ItemList TODOS are done
                 listModel.addElement(text);
                 
                 itemPanel.revalidate();
@@ -67,12 +72,32 @@ private static JFrame frame;
                 inputField.setText("");
             }
         });
+        
+        selected = new Object(); // Selected will be used to track any selected thing ever
+        
+        //Selection in rightPanel
+        itemList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) { // This ensures the event only fires once
+                String selectedValue = itemList.getSelectedValue();
+                if (selectedValue != null) {
+                    selected = selectionConverter(selectedValue);
+                }
+            }
+        });
+    
 
         rightPanel.add(scrollPane, BorderLayout.CENTER);
         rightPanel.add(inputField, BorderLayout.SOUTH);
 
         frame.add(rightPanel, BorderLayout.EAST);
         frame.setVisible(true);
+    }
+
+    public static Item selectionConverter(String text){ // SHOULD be overriden for other objects being selected like tiers or buttons
+        // Helper for selecting items from the right panel for brevity
+        Item item = ItemList.searchItems(text); // will work after ItemList TODOS are done
+        return item;
+
     }
 
 
