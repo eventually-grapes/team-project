@@ -79,7 +79,7 @@ public class ItemListTest {
         Item result = itemList.searchItem("Apple");
         assertNotNull(result);
         assertEquals(item1, result);
-        assertEquals("Apple", result.values[0]);
+        assertEquals("Apple", result.name);
     }
 
     @Test

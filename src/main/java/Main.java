@@ -59,7 +59,7 @@ private static Object selected; // will be used for anything currently selected 
             String text = inputField.getText().trim();
             if (!text.isEmpty()) {
                 Item item = new Item(text);
-                items.addItem(item); //Uncomment when ItemList TODOS are done
+                //items.addItem(item); Uncomment when ItemList TODOS are done
                 listModel.addElement(text);
                 
                 itemPanel.revalidate();
@@ -80,7 +80,7 @@ private static Object selected; // will be used for anything currently selected 
             if (!e.getValueIsAdjusting()) { // This ensures the event only fires once
                 String selectedValue = itemList.getSelectedValue();
                 if (selectedValue != null) {
-                    selected = selectionConverter(selectedValue, items);
+                    selected = selectionConverter(selectedValue);
                 }
             }
         });
@@ -93,9 +93,9 @@ private static Object selected; // will be used for anything currently selected 
         frame.setVisible(true);
     }
 
-    public static Item selectionConverter(String text, ItemList items){ // SHOULD be overriden for other objects being selected like tiers or buttons
+    public static Item selectionConverter(String text){ // SHOULD be overriden for other objects being selected like tiers or buttons
         // Helper for selecting items from the right panel for brevity
-        Item item = items.searchItem(text); // will work after ItemList TODOS are done
+        Item item = ItemList.searchItems(text); // will work after ItemList TODOS are done
         return item;
 
     }

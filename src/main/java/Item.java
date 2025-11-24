@@ -5,19 +5,27 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Item{
-    public String[] values;
+    public String name;
+    public String imageDir;
+    public Image image;
 
     public Item(String itemName){
-
-        this.values = new String[2];
-        this.values[0] = itemName;        
+        this.name = itemName;  
+        this.imageDir = null;
+        this.image = null;
     }
-    public static void addImage(){
-        // takes image and adds it to the array at pos 1
-    
+    public Item(String itemName, String imageDir){
+        this.name = itemName;  
+        this.imageDir = imageDir;
+        this.image = getImage();
+        
     }
-    public Image getImage(String directory) {
-        File source = new File(directory);
+    public void setImage(String directory) {
+        this.imageDir = directory;
+        this.image = getImage();
+    }
+    public Image getImage() {
+        File source = new File(this.imageDir);
         try {
             return ImageIO.read(source);
         } catch (IOException e) {
