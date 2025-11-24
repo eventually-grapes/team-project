@@ -6,9 +6,12 @@ public class ItemList {
     public ItemList(){
         this.list = new ArrayList<Item>();
     }
-    public static void addItem(Item item){}
-    public static void removeItem(Item item){
+    public void addItem(Item item){
+        this.list.add(item);
+    }
+    public void removeItem(Item item){   //should not be static, right?
         // remove item by searching for it
+        this.list.remove(item);
     }
     public static Item searchItems(String name){
         // search for the items name and return it
