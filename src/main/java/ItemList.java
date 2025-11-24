@@ -20,7 +20,7 @@ public class ItemList {
                 return item;
             }
         }
-        return null;  // not found
+        return null;  // if not found
     }
 }
 
