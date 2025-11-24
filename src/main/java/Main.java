@@ -5,11 +5,13 @@ import java.awt.Dimension;
 import javax.swing.*;
 
 public class Main {
-final static int WINDOW_SIZE_WIDTH = 1920;
-final static int WINDOW_SIZE_HEIGHT = 1080;
-private static Color BG_COLOR = new Color(0,000,000); // could add another one called element/ foreground color
-private static JFrame frame;  
-private static Object selected; // will be used for anything currently selected by the user at any given time
+    final static int WINDOW_SIZE_WIDTH = 1920;
+    final static int WINDOW_SIZE_HEIGHT = 1080;
+    private static Color BG_COLOR = new Color(0,000,000); // could add another one called element/ foreground color
+    private static JFrame frame;
+    private static Object selected; // will be used for anything currently selected by the user at any given time
+    private static JList<String> itemList;
+    private static DefaultListModel<String> listModel;
 
     public static void swtitchTheme(){
         BG_COLOR = new Color(111,111,111);
@@ -35,6 +37,13 @@ private static Object selected; // will be used for anything currently selected 
         buttonPanel_1.setLayout(new BoxLayout(buttonPanel_1, BoxLayout.X_AXIS));
         JButton deleteButton = new JButton("DELETE");
         buttonPanel_1.add(deleteButton);
+        deleteButton.addActionListener(e -> {
+            //Delete elements from the item list
+                int index = itemList.getSelectedIndex();
+                if (index != -1) {
+                    listModel.remove(index);
+                }
+        });
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
@@ -53,8 +62,8 @@ private static Object selected; // will be used for anything currently selected 
         JTextField inputField = new JTextField();
         inputField.setPreferredSize(new Dimension(0, 40));
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        JList<String> itemList = new JList<>(listModel);
+        listModel = new DefaultListModel<>(); //999
+        itemList = new JList<>(listModel);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
