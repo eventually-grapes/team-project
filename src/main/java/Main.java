@@ -97,7 +97,7 @@ public class Main {
             if (!e.getValueIsAdjusting()) { // This ensures the event only fires once
                 String selectedValue = itemList.getSelectedValue();
                 if (selectedValue != null) {
-                    selected = selectionConverter(selectedValue);
+                    selected = selectionConverter(selectedValue, items);
                 }
             }
         });
@@ -110,12 +110,12 @@ public class Main {
         frame.setVisible(true);
     }
 
-    public static Item selectionConverter(String text){ // SHOULD be overriden for other objects being selected like tiers or buttons
-        // Helper for selecting items from the right panel for brevity
-        Item item = ItemList.searchItems(text); // will work after ItemList TODOS are done
+    public static Item selectionConverter(String text, ItemList items){ // SHOULD be overriden for other objects being selected like tiers or buttons
+        Item item = items.searchItem(text); // will work after ItemList TODOS are done
         return item;
-
     }
+
+
 
 
     public static void main(String[] args) {
