@@ -16,7 +16,7 @@ public class ItemList {
     public Item searchItem(String name) {
         // search for an item and return it
         for (Item item : list) {
-            if (item.values[0] != null && item.values[0].equals(name)) {
+            if (item.name != null && item.name.equals(name)) {
                 return item;
             }
         }
