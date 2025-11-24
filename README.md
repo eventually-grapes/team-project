@@ -15,8 +15,8 @@ at the end of the term.
 
 # User stories:
 As a user, I want to:
-1. Add text for items to rank
-2. Remove items from the tier list
+1. ~~Add text for items to rank~~
+2. ~~Remove items from the tier list~~
 3. Add items from the item list into one of the tiers in the tier list.
 4. add images to tier list items with the google API
 5. add images to tier list items via file upload
@@ -32,9 +32,9 @@ As a user, I want to:
 15. search for a string different from the name of the item
 
 # Use Cases:
-1. A text box where you can input the name of an item and add it to the item list
-   after pressing Enter 
-2. There's a button that lets you delete items from item list
+1. ~~A text box where you can input the name of an item and add it to the item list
+   after pressing Enter~~
+2. ~~There's a button that lets you delete items from item list~~
 3. You can click an item in the item list and then a tier list row, which will add it to
    the tier list row and remove it from the text item list
 4. On each item in the tier list there is a button with a search icon that allows you to
