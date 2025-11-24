@@ -31,11 +31,19 @@ private static Object selected; // will be used for anything currently selected 
         frame.getContentPane().setBackground(BG_COLOR);
         
         // RIGHT PANEL
+        JPanel buttonPanel_1 = new JPanel();
+        buttonPanel_1.setLayout(new BoxLayout(buttonPanel_1, BoxLayout.X_AXIS));
+        JButton deleteButton = new JButton("DELETE");
+        buttonPanel_1.add(deleteButton);
+
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension( (int)WINDOW_SIZE_WIDTH/3, WINDOW_SIZE_HEIGHT));
         rightPanel.setBackground(BG_COLOR);
-    
+
+        rightPanel.add(buttonPanel_1, BorderLayout.NORTH);
+
+
         // ITEM LIST
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
