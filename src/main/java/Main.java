@@ -1,6 +1,4 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -33,17 +31,21 @@ public class Main {
         frame.getContentPane().setBackground(BG_COLOR);
         
         // RIGHT PANEL
+        JButton deleteButton = new JButton("DELETE");
+        deleteButton.setMargin(new Insets(10, 100, 10, 100));
+        deleteButton.addActionListener(e -> {
+            //This button deletes elements from the item list
+            int index = itemList.getSelectedIndex();
+            if (index != -1) {
+                listModel.remove(index);
+            }
+        });
+
+
         JPanel buttonPanel_1 = new JPanel();
         buttonPanel_1.setLayout(new BoxLayout(buttonPanel_1, BoxLayout.X_AXIS));
-        JButton deleteButton = new JButton("DELETE");
         buttonPanel_1.add(deleteButton);
-        deleteButton.addActionListener(e -> {
-            //Delete elements from the item list
-                int index = itemList.getSelectedIndex();
-                if (index != -1) {
-                    listModel.remove(index);
-                }
-        });
+
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
