@@ -30,21 +30,7 @@ public class Main {
         frame.setVisible(true);
         frame.getContentPane().setBackground(BG_COLOR);
         
-        // RIGHT PANEL
-        JButton deleteButton = new JButton("DELETE");
-        deleteButton.setMargin(new Insets(10, 100, 10, 100));
-        deleteButton.addActionListener(e -> {
-            //This button deletes elements from the item list
-            int index = itemList.getSelectedIndex();
-            if (index != -1) {
-                listModel.remove(index);
-            }
-        });
-
-
-        JPanel buttonPanel_1 = new JPanel();
-        buttonPanel_1.setLayout(new BoxLayout(buttonPanel_1, BoxLayout.X_AXIS));
-        buttonPanel_1.add(deleteButton);
+        // ---- RIGHT PANEL ----
 
 
         JPanel rightPanel = new JPanel();
@@ -52,17 +38,32 @@ public class Main {
         rightPanel.setPreferredSize(new Dimension( (int)WINDOW_SIZE_WIDTH/3, WINDOW_SIZE_HEIGHT));
         rightPanel.setBackground(BG_COLOR);
 
-        rightPanel.add(buttonPanel_1, BorderLayout.NORTH);
-
 
         // ITEM LIST
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
         itemPanel.setBackground(BG_COLOR);
         
-        // TEXT INPUT
+        // TEXT INPUT FIELD and DELETE BUTTON
         JTextField inputField = new JTextField();
         inputField.setPreferredSize(new Dimension(0, 40));
+
+        JButton deleteButton = new JButton("DELETE");
+        deleteButton.setMargin(new Insets(10, 200, 10, 200)); // Makes the button bigger
+        deleteButton.setVisible(false); // Delete buttn nitially hidden
+        deleteButton.addActionListener(e -> {
+            int index = itemList.getSelectedIndex();
+            if (index != -1) {
+                listModel.remove(index);
+            }
+        });
+
+        JPanel buttonPanel_1 = new JPanel();
+        buttonPanel_1.setLayout(new BorderLayout());
+        buttonPanel_1.add(deleteButton, BorderLayout.NORTH);
+        buttonPanel_1.add(inputField, BorderLayout.SOUTH);
+        rightPanel.add(buttonPanel_1, BorderLayout.SOUTH);
+
 
         listModel = new DefaultListModel<>(); //999
         itemList = new JList<>(listModel);
@@ -70,6 +71,8 @@ public class Main {
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
         itemPanel.add(scrollPane);
+        rightPanel.add(scrollPane, BorderLayout.CENTER);
+
 
         // Add message at the bottom and create item object and item list
         ItemList items = new ItemList();
@@ -78,7 +81,7 @@ public class Main {
             String text = inputField.getText().trim();
             if (!text.isEmpty()) {
                 Item item = new Item(text);
-                //items.addItem(item); Uncomment when ItemList TODOS are done
+                items.addItem(item);
                 listModel.addElement(text);
                 
                 itemPanel.revalidate();
@@ -92,21 +95,24 @@ public class Main {
             }
         });
         
-        selected = new Object(); // Selected will be used to track any selected thing ever
-        
+
         //Selection in rightPanel
+        selected = new Object(); // Selected will be used to track any selected thing ever
         itemList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) { // This ensures the event only fires once
                 String selectedValue = itemList.getSelectedValue();
                 if (selectedValue != null) {
                     selected = selectionConverter(selectedValue, items);
+                    deleteButton.setVisible(true);
+                } else {
+                    selected = null;
+                    deleteButton.setVisible(false);
                 }
             }
         });
     
 
-        rightPanel.add(scrollPane, BorderLayout.CENTER);
-        rightPanel.add(inputField, BorderLayout.SOUTH);
+
 
         frame.add(rightPanel, BorderLayout.EAST);
         frame.setVisible(true);
