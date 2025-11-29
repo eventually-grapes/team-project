@@ -19,7 +19,6 @@ public class Main {
         frame.getContentPane().setBackground(BG_COLOR);
         frame.repaint();
         frame.revalidate();
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     // Creates the visual representation of a single tier row
@@ -154,6 +153,7 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.getContentPane().setBackground(BG_COLOR);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Initialize the tier list data
         tierList = new TierList();
@@ -221,7 +221,7 @@ public class Main {
         inputField.setPreferredSize(new Dimension(0, 40));
 
         JButton deleteButton = new JButton("DELETE");
-        deleteButton.setMargin(new Insets(10, 200, 10, 200)); // Makes the button bigger
+        deleteButton.setMargin(new Insets(10, 50, 10, 50)); // Makes the button bigger
         deleteButton.setVisible(false); // Delete buttn nitially hidden
         deleteButton.addActionListener(e -> {
             int index = itemList.getSelectedIndex();
