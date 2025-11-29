@@ -19,6 +19,7 @@ public class Main {
         frame.getContentPane().setBackground(BG_COLOR);
         frame.repaint();
         frame.revalidate();
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     // Creates the visual representation of a single tier row
