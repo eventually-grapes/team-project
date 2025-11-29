@@ -201,8 +201,11 @@ public class Main {
         refreshTierList();
 
         frame.add(leftPanel, BorderLayout.CENTER);
-        
-        // ---- RIGHT PANEL ----
+
+
+
+
+        // ---- RIGHT PANEL (ITEM LIST) ----
 
 
         JPanel rightPanel = new JPanel();
@@ -215,6 +218,23 @@ public class Main {
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
         itemPanel.setBackground(BG_COLOR);
+
+        // UPPER (BUTTONS) PANEL
+        JPanel upperPanel = new JPanel();
+        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
+
+        JButton saveButton = new JButton("SAVE");
+        saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        saveButton.addActionListener(e -> {}); //TODO use case 8: save tier lists
+        JButton loadButton = new JButton("LOAD");
+        loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        loadButton.addActionListener(e -> {}); //TODO use case 9: load tier lists
+
+        upperPanel.add(saveButton);
+        upperPanel.add(loadButton);
+        rightPanel.add(upperPanel, BorderLayout.NORTH);
+
+
         
         // TEXT INPUT FIELD and DELETE BUTTON
         JTextField inputField = new JTextField();
@@ -295,7 +315,7 @@ public class Main {
     }
 
     public static Item selectionConverter(String text, ItemList items){ // SHOULD be overriden for other objects being selected like tiers or buttons
-        Item item = items.searchItem(text); // will work after ItemList TODOS are done
+        Item item = items.searchItem(text);
         return item;
     }
 
