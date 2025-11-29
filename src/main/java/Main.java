@@ -221,6 +221,7 @@ public class Main {
         inputField.setPreferredSize(new Dimension(0, 40));
 
         JButton deleteButton = new JButton("DELETE");
+        deleteButton.setFont(new Font("Courier New", Font.BOLD, 16)); // Button font
         deleteButton.setMargin(new Insets(10, 50, 10, 50)); // Makes the button bigger
         deleteButton.setVisible(false); // Delete buttn nitially hidden
         deleteButton.addActionListener(e -> {
@@ -237,13 +238,16 @@ public class Main {
         rightPanel.add(buttonPanel_1, BorderLayout.SOUTH);
 
 
-        listModel = new DefaultListModel<>(); //999
+        listModel = new DefaultListModel<>();
         itemList = new JList<>(listModel);
+        itemList.setFixedCellHeight(50);  // List Height
+        itemList.setFont(new Font("MV Boli", Font.PLAIN, 18)); // List Font
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
         itemPanel.add(scrollPane);
         rightPanel.add(scrollPane, BorderLayout.CENTER);
+
 
 
         // Add message at the bottom and create item object and item list
