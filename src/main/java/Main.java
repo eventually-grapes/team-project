@@ -113,7 +113,9 @@ public class Main {
     // Creates the visual representation of an item in a tier
     public static JPanel createItemPanel(Item item) {
         JPanel itemPanel = new JPanel(new BorderLayout());
-        itemPanel.setPreferredSize(new Dimension(80, 80));
+        itemPanel.setPreferredSize(new Dimension(90, 90));
+        itemPanel.setMaximumSize(new Dimension(90, 90));
+        itemPanel.setMinimumSize(new Dimension(90, 90));
         itemPanel.setBackground(new Color(60, 60, 60));
         itemPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
@@ -223,10 +225,10 @@ public class Main {
         JPanel upperPanel = new JPanel();
         upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
 
-        JButton saveButton = new JButton("SAVE");
+        JButton saveButton = new JButton("SAVE TIER LIST");
         saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
         saveButton.addActionListener(e -> {}); //TODO use case 8: save tier lists
-        JButton loadButton = new JButton("LOAD");
+        JButton loadButton = new JButton("LOAD TIER LIST");
         loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
         loadButton.addActionListener(e -> {}); //TODO use case 9: load tier lists
 
