@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.File;
 
 import javax.swing.*;
 
@@ -10,12 +11,201 @@ public class Main {
     private static Object selected; // will be used for anything currently selected by the user at any given time
     private static JList<String> itemList;
     private static DefaultListModel<String> listModel;
+    private static TierList tierList;
+    private static JPanel tierListPanel;
+    private static ItemList items; // items in the right panel
 
     public static void swtitchTheme(){
         BG_COLOR = new Color(111,111,111);
         frame.getContentPane().setBackground(BG_COLOR);
         frame.repaint();
         frame.revalidate();
+    }
+
+    // Creates the visual representation of a single tier row
+    public static JPanel createTierRow(Tier tier) {
+        JPanel tierRow = new JPanel(new BorderLayout());
+        tierRow.setBackground(new Color(30, 30, 30));
+        tierRow.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+        tierRow.setPreferredSize(new Dimension(0, 100));
+        tierRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        // Left side: Tier name label with color
+        JLabel tierLabel = new JLabel(tier.name, SwingConstants.CENTER);
+        tierLabel.setOpaque(true);
+        tierLabel.setBackground(tier.color);
+        tierLabel.setForeground(Color.BLACK);
+        tierLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        tierLabel.setPreferredSize(new Dimension(100, 100));
+        tierRow.add(tierLabel, BorderLayout.WEST);
+
+        // Right side: Panel to hold items (horizontal flow, no wrapping)
+        JPanel itemsContainer = new JPanel();
+        itemsContainer.setLayout(new BoxLayout(itemsContainer, BoxLayout.X_AXIS));
+        itemsContainer.setBackground(new Color(40, 40, 40));
+        
+        // Add any existing items in this tier
+        for (Item item : tier.items.list) {
+            JPanel itemPanel = createItemPanel(item);
+            itemsContainer.add(itemPanel);
+            itemsContainer.add(Box.createRigidArea(new Dimension(5, 0))); // spacing between items
+        }
+
+        // Wrap items container in a scroll pane for horizontal scrolling
+        JScrollPane itemsScrollPane = new JScrollPane(itemsContainer);
+        itemsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        itemsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        itemsScrollPane.setBorder(null);
+        itemsScrollPane.getViewport().setBackground(new Color(40, 40, 40));
+
+        tierRow.add(itemsScrollPane, BorderLayout.CENTER);
+
+        // Click listener for the entire tier row - adds selected item to this tier
+        tierRow.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (selected instanceof Item) {
+                    Item selectedItem = (Item) selected;
+                    
+                    // Add item to this tier
+                    tier.items.addItem(selectedItem);
+                    
+                    // Remove from right panel item list
+                    items.removeItem(selectedItem);
+                    listModel.removeElement(selectedItem.name);
+                    
+                    // Clear selection
+                    selected = null;
+                    itemList.clearSelection();
+                    
+                    // Refresh display
+                    refreshTierList();
+                }
+            }
+        });
+
+        // Also add click listener to itemsContainer so clicking empty space works
+        itemsContainer.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (selected instanceof Item) {
+                    Item selectedItem = (Item) selected;
+                    
+                    // Add item to this tier
+                    tier.items.addItem(selectedItem);
+                    
+                    // Remove from right panel item list
+                    items.removeItem(selectedItem);
+                    listModel.removeElement(selectedItem.name);
+                    
+                    // Clear selection
+                    selected = null;
+                    itemList.clearSelection();
+                    
+                    // Refresh display
+                    refreshTierList();
+                }
+            }
+        });
+
+        return tierRow;
+    }
+
+    // Creates the visual representation of an item in a tier
+    public static JPanel createItemPanel(Item item) {
+        JPanel itemPanel = new JPanel(new BorderLayout());
+        itemPanel.setPreferredSize(new Dimension(90, 90));
+        itemPanel.setMaximumSize(new Dimension(90, 90));
+        itemPanel.setMinimumSize(new Dimension(90, 90));
+        itemPanel.setBackground(new Color(60, 60, 60));
+        itemPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        JLabel nameLabel = new JLabel(item.name, SwingConstants.CENTER);
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        itemPanel.add(nameLabel, BorderLayout.CENTER);
+
+        return itemPanel;
+    }
+
+    // Refreshes the tier list display
+    public static void refreshTierList() {
+        tierListPanel.removeAll();
+        
+        // Add tiers in order (by position key)
+        for (int i = 0; i < tierList.tiers.size(); i++) {
+            Tier tier = tierList.tiers.get(i);
+            if (tier != null) {
+                JPanel tierRow = createTierRow(tier);
+                tierListPanel.add(tierRow);
+            }
+        }
+
+        tierListPanel.revalidate();
+        tierListPanel.repaint();
+    }
+
+    // JSON HELPER METHODS
+
+    // JSON serialization method
+    private static void saveTierListToFile(File file) {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(file)) {
+            org.json.JSONObject json = new org.json.JSONObject();
+            org.json.JSONArray tiersArray = new org.json.JSONArray();
+
+            for (int i = 0; i < tierList.tiers.size(); i++) {
+                Tier tier = tierList.tiers.get(i);
+                if (tier != null) {
+                    org.json.JSONObject tierObj = new org.json.JSONObject();
+                    tierObj.put("name", tier.name);
+                    tierObj.put("color", tier.color.getRGB());
+
+                    org.json.JSONArray itemsArray = new org.json.JSONArray();
+                    for (Item item : tier.items.list) {
+                        itemsArray.put(item.name);
+                    }
+                    tierObj.put("items", itemsArray);
+                    tiersArray.put(tierObj);
+                }
+            }
+            json.put("tiers", tiersArray);
+            writer.write(json.toString(2));
+            JOptionPane.showMessageDialog(frame, "Tier list saved successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error saving: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // JSON deserialization method
+    private static void loadTierListFromFile(File file) {
+        try {
+            String content = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            org.json.JSONObject json = new org.json.JSONObject(content);
+            org.json.JSONArray tiersArray = json.getJSONArray("tiers");
+
+            tierList.tiers.clear();
+            items.list.clear();
+            listModel.clear();
+
+            for (int i = 0; i < tiersArray.length(); i++) {
+                org.json.JSONObject tierObj = tiersArray.getJSONObject(i);
+                String name = tierObj.getString("name");
+                Color color = new Color(tierObj.getInt("color"));
+
+                ItemList tierItems = new ItemList();
+                org.json.JSONArray itemsArray = tierObj.getJSONArray("items");
+                for (int j = 0; j < itemsArray.length(); j++) {
+                    tierItems.addItem(new Item(itemsArray.getString(j)));
+                }
+
+                tierList.tiers.put(i, new Tier(tierItems, color, name));
+            }
+
+            refreshTierList();
+            JOptionPane.showMessageDialog(frame, "Tier list loaded successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error loading: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void createAndShowGUI() { //user story 6
@@ -29,13 +219,64 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.getContentPane().setBackground(BG_COLOR);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        // Initialize the tier list data
+        tierList = new TierList();
         
-        // ---- RIGHT PANEL ----
+        // ---- LEFT PANEL (TIER LIST) ----
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.setBackground(BG_COLOR);
+
+        // Panel that holds all tier rows
+        tierListPanel = new JPanel();
+        tierListPanel.setLayout(new BoxLayout(tierListPanel, BoxLayout.Y_AXIS));
+        tierListPanel.setBackground(BG_COLOR);
+
+        // Wrap in scroll pane for when there are many tiers
+        JScrollPane tierScrollPane = new JScrollPane(tierListPanel);
+        tierScrollPane.setBorder(null);
+        tierScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tierScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        tierScrollPane.getViewport().setBackground(BG_COLOR);
+
+        leftPanel.add(tierScrollPane, BorderLayout.CENTER);
+
+        // Text field to add new tiers
+        JTextField tierInputField = new JTextField();
+        tierInputField.setPreferredSize(new Dimension(0, 40));
+        tierInputField.addActionListener(e -> {
+            String tierName = tierInputField.getText().trim();
+            if (!tierName.isEmpty()) {
+                // Create new tier with white color
+                Tier newTier = new Tier(new ItemList(), Color.WHITE, tierName);
+                
+                // Add to tier list at the next position
+                int newPosition = tierList.tiers.size();
+                tierList.tiers.put(newPosition, newTier);
+                
+                // Refresh display
+                refreshTierList();
+                
+                tierInputField.setText("");
+            }
+        });
+        leftPanel.add(tierInputField, BorderLayout.SOUTH);
+
+        // Initial render of tier list
+        refreshTierList();
+
+        frame.add(leftPanel, BorderLayout.CENTER);
+
+
+
+
+        // ---- RIGHT PANEL (ITEM LIST) ----
 
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
-        rightPanel.setPreferredSize(new Dimension( (int)WINDOW_SIZE_WIDTH/3, WINDOW_SIZE_HEIGHT));
+        rightPanel.setPreferredSize(new Dimension( (int)WINDOW_SIZE_WIDTH/6, WINDOW_SIZE_HEIGHT));
         rightPanel.setBackground(BG_COLOR);
 
 
@@ -43,13 +284,55 @@ public class Main {
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
         itemPanel.setBackground(BG_COLOR);
+
+        // UPPER (BUTTONS) PANEL
+        JPanel upperPanel = new JPanel();
+        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
+
+        JButton saveButton = new JButton("SAVE TIER LIST");
+        saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        saveButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showSaveDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (!file.getName().endsWith(".json")) {
+                    file = new File(file.getAbsolutePath() + ".json");
+                }
+                saveTierListToFile(file);
+            }
+        });
+        JButton loadButton = new JButton("LOAD TIER LIST");
+        loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Load Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                loadTierListFromFile(file);
+            }
+        });
+
+        upperPanel.add(saveButton);
+        upperPanel.add(loadButton);
+        rightPanel.add(upperPanel, BorderLayout.NORTH);
+
+
         
         // TEXT INPUT FIELD and DELETE BUTTON
         JTextField inputField = new JTextField();
-        inputField.setPreferredSize(new Dimension(0, 40));
+        inputField.setPreferredSize(new Dimension(WINDOW_SIZE_WIDTH/6, 40));
+        inputField.setFont(new Font("MV Boli", Font.BOLD, 26));
 
         JButton deleteButton = new JButton("DELETE");
-        deleteButton.setMargin(new Insets(10, 200, 10, 200)); // Makes the button bigger
+        deleteButton.setFont(new Font("Courier New", Font.BOLD, 16)); // Button font
+        deleteButton.setMargin(new Insets(10, 50, 10, 50)); // Makes the button bigger
         deleteButton.setVisible(false); // Delete buttn nitially hidden
         deleteButton.addActionListener(e -> {
             int index = itemList.getSelectedIndex();
@@ -65,8 +348,10 @@ public class Main {
         rightPanel.add(buttonPanel_1, BorderLayout.SOUTH);
 
 
-        listModel = new DefaultListModel<>(); //999
+        listModel = new DefaultListModel<>();
         itemList = new JList<>(listModel);
+        itemList.setFixedCellHeight(50);  // List Height
+        itemList.setFont(new Font("MV Boli", Font.BOLD, 18)); // List Font
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
@@ -74,8 +359,9 @@ public class Main {
         rightPanel.add(scrollPane, BorderLayout.CENTER);
 
 
+
         // Add message at the bottom and create item object and item list
-        ItemList items = new ItemList();
+        items = new ItemList();
 
         inputField.addActionListener(e -> {
             String text = inputField.getText().trim();
@@ -119,7 +405,7 @@ public class Main {
     }
 
     public static Item selectionConverter(String text, ItemList items){ // SHOULD be overriden for other objects being selected like tiers or buttons
-        Item item = items.searchItem(text); // will work after ItemList TODOS are done
+        Item item = items.searchItem(text);
         return item;
     }
 
