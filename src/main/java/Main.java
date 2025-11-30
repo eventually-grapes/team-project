@@ -327,7 +327,8 @@ public class Main {
         
         // TEXT INPUT FIELD and DELETE BUTTON
         JTextField inputField = new JTextField();
-        inputField.setPreferredSize(new Dimension(0, 40));
+        inputField.setPreferredSize(new Dimension(WINDOW_SIZE_WIDTH/6, 40));
+        inputField.setFont(new Font("MV Boli", Font.BOLD, 26));
 
         JButton deleteButton = new JButton("DELETE");
         deleteButton.setFont(new Font("Courier New", Font.BOLD, 16)); // Button font
@@ -350,7 +351,7 @@ public class Main {
         listModel = new DefaultListModel<>();
         itemList = new JList<>(listModel);
         itemList.setFixedCellHeight(50);  // List Height
-        itemList.setFont(new Font("MV Boli", Font.PLAIN, 18)); // List Font
+        itemList.setFont(new Font("MV Boli", Font.BOLD, 18)); // List Font
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
