@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.File;
 
 import javax.swing.*;
 
@@ -144,6 +145,69 @@ public class Main {
         tierListPanel.repaint();
     }
 
+    // JSON HELPER METHODS
+
+    // JSON serialization method
+    private static void saveTierListToFile(File file) {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(file)) {
+            org.json.JSONObject json = new org.json.JSONObject();
+            org.json.JSONArray tiersArray = new org.json.JSONArray();
+
+            for (int i = 0; i < tierList.tiers.size(); i++) {
+                Tier tier = tierList.tiers.get(i);
+                if (tier != null) {
+                    org.json.JSONObject tierObj = new org.json.JSONObject();
+                    tierObj.put("name", tier.name);
+                    tierObj.put("color", tier.color.getRGB());
+
+                    org.json.JSONArray itemsArray = new org.json.JSONArray();
+                    for (Item item : tier.items.list) {
+                        itemsArray.put(item.name);
+                    }
+                    tierObj.put("items", itemsArray);
+                    tiersArray.put(tierObj);
+                }
+            }
+            json.put("tiers", tiersArray);
+            writer.write(json.toString(2));
+            JOptionPane.showMessageDialog(frame, "Tier list saved successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error saving: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // JSON deserialization method
+    private static void loadTierListFromFile(File file) {
+        try {
+            String content = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            org.json.JSONObject json = new org.json.JSONObject(content);
+            org.json.JSONArray tiersArray = json.getJSONArray("tiers");
+
+            tierList.tiers.clear();
+            items.list.clear();
+            listModel.clear();
+
+            for (int i = 0; i < tiersArray.length(); i++) {
+                org.json.JSONObject tierObj = tiersArray.getJSONObject(i);
+                String name = tierObj.getString("name");
+                Color color = new Color(tierObj.getInt("color"));
+
+                ItemList tierItems = new ItemList();
+                org.json.JSONArray itemsArray = tierObj.getJSONArray("items");
+                for (int j = 0; j < itemsArray.length(); j++) {
+                    tierItems.addItem(new Item(itemsArray.getString(j)));
+                }
+
+                tierList.tiers.put(i, new Tier(tierItems, color, name));
+            }
+
+            refreshTierList();
+            JOptionPane.showMessageDialog(frame, "Tier list loaded successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error loading: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public static void createAndShowGUI() { //user story 6
         //Create and set up the window.
         frame = new JFrame("Tier List");
@@ -227,10 +291,35 @@ public class Main {
 
         JButton saveButton = new JButton("SAVE TIER LIST");
         saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
-        saveButton.addActionListener(e -> {}); //TODO use case 8: save tier lists
+//        saveButton.addActionListener(e -> {}); //TODO use case 8: save tier lists
+        saveButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showSaveDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (!file.getName().endsWith(".json")) {
+                    file = new File(file.getAbsolutePath() + ".json");
+                }
+                saveTierListToFile(file);
+            }
+        });
         JButton loadButton = new JButton("LOAD TIER LIST");
         loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
-        loadButton.addActionListener(e -> {}); //TODO use case 9: load tier lists
+//        loadButton.addActionListener(e -> {}); //TODO use case 9: load tier lists
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Load Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                loadTierListFromFile(file);
+            }
+        });
 
         upperPanel.add(saveButton);
         upperPanel.add(loadButton);
