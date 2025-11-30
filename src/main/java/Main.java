@@ -291,7 +291,6 @@ public class Main {
 
         JButton saveButton = new JButton("SAVE TIER LIST");
         saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
-//        saveButton.addActionListener(e -> {}); //TODO use case 8: save tier lists
         saveButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Save Tier List");
@@ -308,7 +307,6 @@ public class Main {
         });
         JButton loadButton = new JButton("LOAD TIER LIST");
         loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
-//        loadButton.addActionListener(e -> {}); //TODO use case 9: load tier lists
         loadButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Load Tier List");
