@@ -16,6 +16,7 @@ public class Main {
     private static JPanel tierListPanel;
     private static ItemList items; // items in the right panel
     private static Tier selectedSourceTier; // tracks which tier a selected came from (null if from item list
+    final static int TIER_HEIGHT = 160;
 
     public static void swtitchTheme(){
         BG_COLOR = new Color(111,111,111);
@@ -29,12 +30,12 @@ public class Main {
         JPanel tierRow = new JPanel(new BorderLayout());
         tierRow.setBackground(new Color(30, 30, 30));
         tierRow.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-        tierRow.setPreferredSize(new Dimension(0, 100));
-        tierRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        tierRow.setPreferredSize(new Dimension(0, TIER_HEIGHT));
+        tierRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, TIER_HEIGHT));
 
         // Left side: Panel containing buttons and tier name
         JPanel tierLabelPanel = new JPanel(new BorderLayout());
-        tierLabelPanel.setPreferredSize(new Dimension(100, 100));
+        tierLabelPanel.setPreferredSize(new Dimension(TIER_HEIGHT, TIER_HEIGHT));
         tierLabelPanel.setBackground(tier.color);
 
         // Panel to hold buttons vertically on the left side like for the arrow keys up and down
@@ -267,10 +268,12 @@ public class Main {
 
     // Creates the visual representation of an item in a tier
     public static JPanel createItemPanel(Item item, Tier sourceTier) {
-        JPanel itemPanel = new JPanel(new BorderLayout());
-        itemPanel.setPreferredSize(new Dimension(90, 90));
-        itemPanel.setMaximumSize(new Dimension(90, 90));
-        itemPanel.setMinimumSize(new Dimension(90, 90));
+        JPanel itemPanel = item.getItemGUI();
+        Dimension guiPref = itemPanel.getPreferredSize();
+
+        itemPanel.setPreferredSize(guiPref);
+        itemPanel.setMaximumSize(guiPref);
+        itemPanel.setMinimumSize(guiPref);
         itemPanel.setBackground(new Color(60, 60, 60));
         itemPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
@@ -297,15 +300,10 @@ public class Main {
             refreshTierList();
         });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        buttonPanel.setOpaque(false);
-        buttonPanel.add(sendBackButton);
-        itemPanel.add(buttonPanel, BorderLayout.NORTH);
-
-        JLabel nameLabel = new JLabel(item.name, SwingConstants.CENTER);
-        nameLabel.setForeground(Color.WHITE);
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        itemPanel.add(nameLabel, BorderLayout.CENTER);
+        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        bottomBar.setOpaque(false);
+        bottomBar.add(sendBackButton);
+        itemPanel.add(bottomBar, BorderLayout.SOUTH);
 
         // Click listener to select this item or insert selected item
         itemPanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -536,7 +534,7 @@ public class Main {
         upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
 
         JButton saveButton = new JButton("SAVE TIER LIST");
-        saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        saveButton.setFont(new Font("Courier New", Font.BOLD, 15));
         saveButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Save Tier List");
@@ -552,7 +550,7 @@ public class Main {
             }
         });
         JButton loadButton = new JButton("LOAD TIER LIST");
-        loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        loadButton.setFont(new Font("Courier New", Font.BOLD, 15));
         loadButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Load Tier List");

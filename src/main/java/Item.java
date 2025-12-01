@@ -65,7 +65,7 @@ public class Item{
     }
 
     public JPanel getItemGUI() {
-        final int size = 200;
+        final int size = Main.TIER_HEIGHT;
 
         JPanel itemTile = new JPanel(new BorderLayout());
         itemTile.setPreferredSize(new Dimension(size, size));
@@ -75,11 +75,12 @@ public class Item{
 
         //top bar:
         JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setOpaque(false);
 
         JButton uploadButton = new JButton("↑");
-        uploadButton.setFont(new Font("Arial", Font.BOLD, 14));
+        uploadButton.setFont(new Font("Arial", Font.BOLD, 10));
         uploadButton.setMargin(new Insets(0, 0, 0, 0));
-        uploadButton.setPreferredSize(new Dimension(30, 30));
+        uploadButton.setPreferredSize(new Dimension(16, 16));
         uploadButton.setToolTipText("Image Upload");
         uploadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -94,13 +95,15 @@ public class Item{
         });
         topBar.add(uploadButton, BorderLayout.WEST);
 
-        JLabel nameLabel = new JLabel(" "+this.name+" ", SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(this.name, SwingConstants.CENTER);
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         topBar.add(nameLabel, BorderLayout.CENTER);
 
         JButton searchButton = new JButton("⌕");
-        searchButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        searchButton.setFont(new Font("SansSerif", Font.BOLD, 10));
         searchButton.setMargin(new Insets(0, 0, 0, 0));
-        searchButton.setPreferredSize(new Dimension(30, 30));
+        searchButton.setPreferredSize(new Dimension(16, 16));
         searchButton.setToolTipText("Google Image Search");
         searchButton.addActionListener(e -> {
             String query = JOptionPane.showInputDialog(itemTile, "Search images for:", "Google Image Search", JOptionPane.PLAIN_MESSAGE);
@@ -282,28 +285,10 @@ public class Item{
         };
         //imagePanel.setOpaque(false);
 
-        //bottom bar:
-        JPanel bottomBar = new JPanel(new BorderLayout());
-
-        JButton trashButton = new JButton("→");
-        trashButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        trashButton.setMargin(new Insets(0, 0, 0, 0));
-        trashButton.setPreferredSize(new Dimension(30, 30));
-        trashButton.setToolTipText("Remove");
-        trashButton.addActionListener(e -> {
-            Container parent = itemTile.getParent();
-            if (parent != null) {
-                parent.remove(itemTile);
-                parent.revalidate();
-                parent.repaint();
-            }
-        });
-        bottomBar.add(trashButton, BorderLayout.EAST);
 
         //everything together:
         itemTile.add(topBar, BorderLayout.NORTH);
         itemTile.add(imagePanel, BorderLayout.CENTER);
-        itemTile.add(bottomBar, BorderLayout.SOUTH);
 
         itemTile.revalidate();
         itemTile.repaint();
