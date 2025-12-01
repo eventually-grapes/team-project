@@ -13,11 +13,15 @@ import okhttp3.Response;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class GoogleAPI {
     private final OkHttpClient client = new OkHttpClient();
+    Dotenv dotenv = Dotenv.load();
 
     public List<Image> getImages(String query) {
-        String url = "https://www.googleapis.com/customsearch/v1?cx=" + System.getenv("CX") + "&key=" + System.getenv("KEY") + "&q=" + query + "&num=3&searchType=image";
+        String url = "https://www.googleapis.com/customsearch/v1?cx=" + dotenv.get("CX") + "&key=" + dotenv.get("KEY") + "&q=" + query + "&num=3&searchType=image";
+        System.out.println(url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();
