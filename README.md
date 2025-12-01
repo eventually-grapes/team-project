@@ -18,8 +18,8 @@ As a user, I want to:
 1. ~~Add text for items to rank~~
 2. ~~Remove items from the tier list~~
 3. ~~Add items from the item list into one of the tiers in the tier list.~~
-4. add images to tier list items with the google API
-5. add images to tier list items via file upload
+4. ~~add images to tier list items with the Google API~~
+5. ~~add images to tier list items via file upload~~
 6. ~~remove items from a tier back into the item list~~
 7. ~~change the name of a tier~~
 8. ~~open previously saved tier lists~~
@@ -29,7 +29,7 @@ As a user, I want to:
 12. edit item names in the item list
 13. ~~change the color of a tier list icon~~
 14. ~~delete a tier list row~~
-15. search for a string different from the name of the item
+15. ~~search for a string different from the name of the item~~
 
 # Use Cases:
 1. ~~A text box where you can input the name of an item and add it to the item list
@@ -37,12 +37,12 @@ As a user, I want to:
 2. ~~There's a button that lets you delete items from item list~~
 3. ~~You can click an item in the item list and then a tier list row, which will add it to
    the tier list row and remove it from the text item list~~
-4. On each item in the tier list there is a button with a search icon that allows you to
+4. ~~On each item in the tier list there is a button with a search icon that allows you to
    search for images with the Google API by typing in a string, selecting one adds it
-   to the tier list item
-5. On each item (in the tier list panel) in the tier list there is a button with an upload
+   to the tier list item~~
+5. ~~On each item (in the tier list panel) in the tier list there is a button with an upload
    icon that opens the file explorer and allows you to select an image from your
-   computer to add to the tier list item
+   computer to add to the tier list item~~
 6. ~~On each item in the tier list there is a right arrow button that, when clicked,
    removes it from the tier list row and adds the text back to the item text list~~
 7. ~~You can click on the name of any tier along the left side of the screen and edit its
