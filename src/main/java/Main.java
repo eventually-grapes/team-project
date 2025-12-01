@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -50,14 +51,14 @@ public class Main {
         editButton.addActionListener(e -> {
             // panel for dialog box
             JPanel editPanel = new JPanel(new BorderLayout(5, 5));
-            
+
             // Name field
             JPanel namePanel = new JPanel(new BorderLayout());
             namePanel.add(new JLabel("Tier Name: "), BorderLayout.WEST);
             JTextField nameField = new JTextField(tier.name);
             namePanel.add(nameField, BorderLayout.CENTER);
             editPanel.add(namePanel, BorderLayout.NORTH);
-            
+
             // Color chooser button
             JButton chooseColorButton = new JButton("Choose Color");
             final Color[] selectedColor = {tier.color}; // use array to allow modification in lambda
@@ -70,10 +71,10 @@ public class Main {
                 }
             });
             editPanel.add(chooseColorButton, BorderLayout.CENTER);
-            
-            int result = JOptionPane.showConfirmDialog(frame, editPanel, "Edit Tier", 
+
+            int result = JOptionPane.showConfirmDialog(frame, editPanel, "Edit Tier",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            
+
             if (result == JOptionPane.OK_OPTION) {
                 String newName = nameField.getText().trim();
                 if (!newName.isEmpty()) {
@@ -133,10 +134,10 @@ public class Main {
                 items.addItem(item);
                 listModel.addElement(item.name);
             }
-            
+
             // Remove this tier and shift all tiers above down
             tierList.tiers.remove(position);
-            
+
             // Reindex  tiers
             HashMap<Integer, Tier> newTiers = new HashMap<>();
             int newIndex = 0;
@@ -150,10 +151,10 @@ public class Main {
                 }
             }
             tierList.tiers = newTiers;
-            
+
             refreshTierList();
         });
-        
+
         JPanel deletePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         deletePanel.setOpaque(false);
         deletePanel.add(deleteButton);
@@ -200,7 +201,7 @@ public class Main {
                     if (selectedSourceTier == tier) {
                         return;
                     }
-                    
+
                     // Add item to this tier
                     tier.items.addItem(selectedItem);
                     
@@ -236,7 +237,7 @@ public class Main {
                     if (selectedSourceTier == tier) {
                         return;
                     }
-                    
+
                     // Add item to this tier
                     tier.items.addItem(selectedItem);
                     
@@ -267,7 +268,9 @@ public class Main {
     // Creates the visual representation of an item in a tier
     public static JPanel createItemPanel(Item item, Tier sourceTier) {
         JPanel itemPanel = new JPanel(new BorderLayout());
-        itemPanel.setPreferredSize(new Dimension(80, 80));
+        itemPanel.setPreferredSize(new Dimension(90, 90));
+        itemPanel.setMaximumSize(new Dimension(90, 90));
+        itemPanel.setMinimumSize(new Dimension(90, 90));
         itemPanel.setBackground(new Color(60, 60, 60));
         itemPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
@@ -279,21 +282,21 @@ public class Main {
         sendBackButton.addActionListener(e -> {
             // Remove from tier
             sourceTier.items.removeItem(item);
-            
+
             // Add to item list on the right
             items.addItem(item);
             listModel.addElement(item.name);
-            
+
             // Clear selection if this item was selected
             if (selected == item) {
                 selected = null;
                 selectedSourceTier = null;
             }
-            
+
             // Refresh display
             refreshTierList();
         });
-        
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.add(sendBackButton);
@@ -311,13 +314,13 @@ public class Main {
                 // If there's a selected item and it's not this item
                 if (selected instanceof Item && selected != item) {
                     Item selectedItem = (Item) selected;
-                    
+
                     // if clicked on left or right half
                     int clickX = e.getX();
                     int panelWidth = itemPanel.getWidth();
                     boolean clickedRightHalf = clickX > panelWidth / 2;
                     int clickedIndex = sourceTier.items.list.indexOf(item);
-                    
+
                     // Remove selected
                     if (selectedSourceTier != null) {
                         selectedSourceTier.items.removeItem(selectedItem);
@@ -325,10 +328,10 @@ public class Main {
                         items.removeItem(selectedItem);
                         listModel.removeElement(selectedItem.name);
                     }
-                    
+
                     // Recalculate index after removal (in case item was in same tier before clicked item)
                     clickedIndex = sourceTier.items.list.indexOf(item);
-                    
+
                     // Insert at the correct position
                     int insertIndex;
                     if (clickedRightHalf) {
@@ -338,18 +341,18 @@ public class Main {
                         // Insert befor
                         insertIndex = clickedIndex;
                     }
-                    
+
                     // What if index wasnt valid
                     if (insertIndex < 0) insertIndex = 0;
                     if (insertIndex > sourceTier.items.list.size()) insertIndex = sourceTier.items.list.size();
-                    
+
                     sourceTier.items.list.add(insertIndex, selectedItem);
-                    
+
                     // Clear selection
                     selected = null;
                     selectedSourceTier = null;
                     itemList.clearSelection();
-                    
+
                     // Refresh display
                     refreshTierList();
                 } else {
@@ -388,6 +391,69 @@ public class Main {
         tierListPanel.repaint();
     }
 
+    // JSON HELPER METHODS
+
+    // JSON serialization method
+    private static void saveTierListToFile(File file) {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(file)) {
+            org.json.JSONObject json = new org.json.JSONObject();
+            org.json.JSONArray tiersArray = new org.json.JSONArray();
+
+            for (int i = 0; i < tierList.tiers.size(); i++) {
+                Tier tier = tierList.tiers.get(i);
+                if (tier != null) {
+                    org.json.JSONObject tierObj = new org.json.JSONObject();
+                    tierObj.put("name", tier.name);
+                    tierObj.put("color", tier.color.getRGB());
+
+                    org.json.JSONArray itemsArray = new org.json.JSONArray();
+                    for (Item item : tier.items.list) {
+                        itemsArray.put(item.name);
+                    }
+                    tierObj.put("items", itemsArray);
+                    tiersArray.put(tierObj);
+                }
+            }
+            json.put("tiers", tiersArray);
+            writer.write(json.toString(2));
+            JOptionPane.showMessageDialog(frame, "Tier list saved successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error saving: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // JSON deserialization method
+    private static void loadTierListFromFile(File file) {
+        try {
+            String content = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            org.json.JSONObject json = new org.json.JSONObject(content);
+            org.json.JSONArray tiersArray = json.getJSONArray("tiers");
+
+            tierList.tiers.clear();
+            items.list.clear();
+            listModel.clear();
+
+            for (int i = 0; i < tiersArray.length(); i++) {
+                org.json.JSONObject tierObj = tiersArray.getJSONObject(i);
+                String name = tierObj.getString("name");
+                Color color = new Color(tierObj.getInt("color"));
+
+                ItemList tierItems = new ItemList();
+                org.json.JSONArray itemsArray = tierObj.getJSONArray("items");
+                for (int j = 0; j < itemsArray.length(); j++) {
+                    tierItems.addItem(new Item(itemsArray.getString(j)));
+                }
+
+                tierList.tiers.put(i, new Tier(tierItems, color, name));
+            }
+
+            refreshTierList();
+            JOptionPane.showMessageDialog(frame, "Tier list loaded successfully!");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame, "Error loading: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public static void createAndShowGUI() { //user story 6
         //Create and set up the window.
         frame = new JFrame("Tier List");
@@ -399,6 +465,7 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.getContentPane().setBackground(BG_COLOR);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Initialize the tier list data
         tierList = new TierList();
@@ -446,8 +513,11 @@ public class Main {
         refreshTierList();
 
         frame.add(leftPanel, BorderLayout.CENTER);
-        
-        // ---- RIGHT PANEL ----
+
+
+
+
+        // ---- RIGHT PANEL (ITEM LIST) ----
 
 
         JPanel rightPanel = new JPanel();
@@ -460,13 +530,55 @@ public class Main {
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
         itemPanel.setBackground(BG_COLOR);
-        
+
+        // UPPER (BUTTONS) PANEL
+        JPanel upperPanel = new JPanel();
+        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
+
+        JButton saveButton = new JButton("SAVE TIER LIST");
+        saveButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        saveButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showSaveDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (!file.getName().endsWith(".json")) {
+                    file = new File(file.getAbsolutePath() + ".json");
+                }
+                saveTierListToFile(file);
+            }
+        });
+        JButton loadButton = new JButton("LOAD TIER LIST");
+        loadButton.setFont(new Font("Courier New", Font.BOLD, 16));
+        loadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Load Tier List");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("JSON files", "json"));
+
+            int result = fileChooser.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                loadTierListFromFile(file);
+            }
+        });
+
+        upperPanel.add(saveButton);
+        upperPanel.add(loadButton);
+        rightPanel.add(upperPanel, BorderLayout.NORTH);
+
+
+
         // TEXT INPUT FIELD and DELETE BUTTON
         JTextField inputField = new JTextField();
-        inputField.setPreferredSize(new Dimension(0, 40));
+        inputField.setPreferredSize(new Dimension(WINDOW_SIZE_WIDTH/6, 40));
+        inputField.setFont(new Font("MV Boli", Font.BOLD, 26));
 
         JButton deleteButton = new JButton("DELETE");
-        deleteButton.setMargin(new Insets(10, 200, 10, 200)); // Makes the button bigger
+        deleteButton.setFont(new Font("Courier New", Font.BOLD, 16)); // Button font
+        deleteButton.setMargin(new Insets(10, 50, 10, 50)); // Makes the button bigger
         deleteButton.setVisible(false); // Delete buttn nitially hidden
         deleteButton.addActionListener(e -> {
             int index = itemList.getSelectedIndex();
@@ -482,13 +594,16 @@ public class Main {
         rightPanel.add(buttonPanel_1, BorderLayout.SOUTH);
 
 
-        listModel = new DefaultListModel<>(); //999
+        listModel = new DefaultListModel<>();
         itemList = new JList<>(listModel);
+        itemList.setFixedCellHeight(50);  // List Height
+        itemList.setFont(new Font("MV Boli", Font.BOLD, 18)); // List Font
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(itemList);
         scrollPane.setBorder(null);
         itemPanel.add(scrollPane);
         rightPanel.add(scrollPane, BorderLayout.CENTER);
+
 
 
         // Add message at the bottom and create item object and item list
@@ -536,18 +651,18 @@ public class Main {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (selected instanceof Item && selectedSourceTier != null) {
                     Item selectedItem = (Item) selected;
-                    
+
                     // Remove from source tier
                     selectedSourceTier.items.removeItem(selectedItem);
-                    
+
                     // Add to item list
                     items.addItem(selectedItem);
                     listModel.addElement(selectedItem.name);
-                    
+
                     // Clear selection
                     selected = null;
                     selectedSourceTier = null;
-                    
+
                     // Refresh display
                     refreshTierList();
                 }
@@ -560,24 +675,24 @@ public class Main {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (selected instanceof Item && selectedSourceTier != null) {
                     Item selectedItem = (Item) selected;
-                    
+
                     // Remove from source tier
                     selectedSourceTier.items.removeItem(selectedItem);
-                    
+
                     // Add to item list
                     items.addItem(selectedItem);
                     listModel.addElement(selectedItem.name);
-                    
+
                     // Clear selection
                     selected = null;
                     selectedSourceTier = null;
-                    
+
                     // Refresh display
                     refreshTierList();
                 }
             }
         });
-    
+
 
 
 
@@ -586,7 +701,7 @@ public class Main {
     }
 
     public static Item selectionConverter(String text, ItemList items){ // SHOULD be overriden for other objects being selected like tiers or buttons
-        Item item = items.searchItem(text); // will work after ItemList TODOS are done
+        Item item = items.searchItem(text);
         return item;
     }
 
