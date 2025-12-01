@@ -106,7 +106,7 @@ public class Item{
         searchButton.setPreferredSize(new Dimension(16, 16));
         searchButton.setToolTipText("Google Image Search");
         searchButton.addActionListener(e -> {
-            String query = JOptionPane.showInputDialog(itemTile, "Search images for:", "Google Image Search", JOptionPane.PLAIN_MESSAGE);
+            String query = (String) JOptionPane.showInputDialog(itemTile, "Search images for:", "Google Image Search", JOptionPane.PLAIN_MESSAGE, null, null, this.name);
             if (query == null) return;
             query = query.trim();
             if (query.isEmpty()) return;
