@@ -128,8 +128,8 @@ public class Item{
                     try {
                         waiting.dispose();
 
-                        List<Image> imgs = get();
-                        if (imgs == null || imgs.isEmpty()) {
+                        List<Image> images = get();
+                        if (images == null || images.isEmpty()) {
                             JOptionPane.showMessageDialog(itemTile, "No images found", "No Results", JOptionPane.INFORMATION_MESSAGE);
                             return;
                         }
@@ -154,8 +154,8 @@ public class Item{
                             return b;
                         };
 
-                        for (int i = 0; i < imgs.size(); i++) {
-                            final Image orig = imgs.get(i);
+                        for (int i = 0; i < images.size(); i++) {
+                            final Image orig = images.get(i);
                             if (orig == null) continue;
                             int thumbW = 140, thumbH = 140;
                             int iw = orig.getWidth(null);
@@ -207,6 +207,15 @@ public class Item{
                         chooser.pack();
                         chooser.setLocationRelativeTo(itemTile);
                         chooser.setVisible(true);
+                    } catch (java.util.concurrent.ExecutionException ee) {
+                        Throwable cause = ee.getCause();
+                        String msg = (cause != null && cause.getMessage() != null) ? cause.getMessage() : ee.getMessage();
+                        JOptionPane.showMessageDialog(itemTile, "Image search failed: " + msg, "Search Error", JOptionPane.ERROR_MESSAGE);
+                        waiting.dispose();
+                    } catch (InterruptedException ie) {
+                        waiting.dispose();
+                        Thread.currentThread().interrupt();
+                        JOptionPane.showMessageDialog(itemTile, "Image search interrupted.", "Search Interrupted", JOptionPane.ERROR_MESSAGE);                                    
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(itemTile, "Image search failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
