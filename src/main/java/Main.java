@@ -401,12 +401,16 @@ public class Main {
                 Tier tier = tierList.tiers.get(i);
                 if (tier != null) {
                     org.json.JSONObject tierObj = new org.json.JSONObject();
+
                     tierObj.put("name", tier.name);
                     tierObj.put("color", tier.color.getRGB());
 
                     org.json.JSONArray itemsArray = new org.json.JSONArray();
                     for (Item item : tier.items.list) {
-                        itemsArray.put(item.name);
+                        org.json.JSONArray itemTuple = new org.json.JSONArray();
+                        itemTuple.put(item.name);
+                        itemTuple.put(item.imageDir);
+                        itemsArray.put(itemTuple);
                     }
                     tierObj.put("items", itemsArray);
                     tiersArray.put(tierObj);
@@ -439,7 +443,15 @@ public class Main {
                 ItemList tierItems = new ItemList();
                 org.json.JSONArray itemsArray = tierObj.getJSONArray("items");
                 for (int j = 0; j < itemsArray.length(); j++) {
-                    tierItems.addItem(new Item(itemsArray.getString(j)));
+                    org.json.JSONArray itemTuple = itemsArray.getJSONArray(j);
+                    String itemName = itemTuple.getString(0);
+                    String imageDir = itemTuple.optString(1, null);
+                    if (imageDir == null) {
+                        tierItems.addItem(new Item(itemName));
+                    }
+                    else {
+                        tierItems.addItem(new Item(itemName, imageDir));
+                    }
                 }
 
                 tierList.tiers.put(i, new Tier(tierItems, color, name));
