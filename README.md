@@ -13,7 +13,7 @@ your team will find it easier to prepare for the final presentation
 at the end of the term.
 
 
-# User stories:
+# User stories (COMPLETE):
 As a user, I want to:
 1. Add text for items to rank [x]
 2. Remove items from the tier list [x]
@@ -31,7 +31,7 @@ As a user, I want to:
 14. delete a tier list row [x]
 15. search for a string different from the name of the item [x]
 
-# Use Cases:
+# Use Cases (COMPLETE):
 1. A text box where you can input the name of an item and add it to the item list
    after pressing Enter [x]
 2. There's a button that lets you delete items from item list [x]
