@@ -17,10 +17,32 @@ public class Main {
     private static ItemList items; // items in the right panel
     private static Tier selectedSourceTier; // tracks which tier a selected came from (null if from item list
     final static int TIER_HEIGHT = 160;
+    private static boolean darkMode = true; // start in dark mode
+    private static JPanel leftPanel;
+    private static JPanel rightPanel;
+    private static JScrollPane tierScrollPane;
+    private static JScrollPane itemScrollPane;
 
-    public static void swtitchTheme(){
-        BG_COLOR = new Color(111,111,111);
+    public static void switchTheme(){
+        darkMode = !darkMode;
+        if (darkMode) {
+            BG_COLOR = new Color(0, 0, 0);
+            itemList.setBackground(new Color(30, 30, 30));
+            itemList.setForeground(Color.WHITE);
+        } else {
+            BG_COLOR = new Color(220, 220, 220);
+            itemList.setBackground(Color.WHITE);
+            itemList.setForeground(Color.BLACK);
+        }
+        // Update all panel backgrounds
         frame.getContentPane().setBackground(BG_COLOR);
+        leftPanel.setBackground(BG_COLOR);
+        rightPanel.setBackground(BG_COLOR);
+        tierListPanel.setBackground(BG_COLOR);
+        tierScrollPane.getViewport().setBackground(BG_COLOR);
+        itemScrollPane.getViewport().setBackground(BG_COLOR);
+        
+        refreshTierList();
         frame.repaint();
         frame.revalidate();
     }
@@ -481,7 +503,7 @@ public class Main {
         tierList = new TierList();
         
         // ---- LEFT PANEL (TIER LIST) ----
-        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel = new JPanel(new BorderLayout());
         leftPanel.setBackground(BG_COLOR);
 
         // Panel that holds all tier rows
@@ -490,7 +512,7 @@ public class Main {
         tierListPanel.setBackground(BG_COLOR);
 
         // Wrap in scroll pane for when there are many tiers
-        JScrollPane tierScrollPane = new JScrollPane(tierListPanel);
+        tierScrollPane = new JScrollPane(tierListPanel);
         tierScrollPane.setBorder(null);
         tierScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         tierScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -530,7 +552,7 @@ public class Main {
         // ---- RIGHT PANEL (ITEM LIST) ----
 
 
-        JPanel rightPanel = new JPanel();
+        rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension( (int)WINDOW_SIZE_WIDTH/6, WINDOW_SIZE_HEIGHT));
         rightPanel.setBackground(BG_COLOR);
@@ -577,6 +599,20 @@ public class Main {
 
         upperPanel.add(saveButton);
         upperPanel.add(loadButton);
+        
+        JToggleButton darkModeToggle = new JToggleButton("☀ Light");
+        darkModeToggle.setSelected(true); // start in dark mode
+        darkModeToggle.setFont(new Font("Courier New", Font.BOLD, 12));
+        darkModeToggle.addActionListener(e -> {
+            switchTheme();
+            if (darkMode) {
+                darkModeToggle.setText("☀ Light");
+            } else {
+                darkModeToggle.setText("🌙 Dark");
+            }
+        });
+        upperPanel.add(darkModeToggle);
+        
         rightPanel.add(upperPanel, BorderLayout.NORTH);
 
 
@@ -608,11 +644,13 @@ public class Main {
         itemList = new JList<>(listModel);
         itemList.setFixedCellHeight(50);  // List Height
         itemList.setFont(new Font("MV Boli", Font.BOLD, 18)); // List Font
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(itemList);
-        scrollPane.setBorder(null);
-        itemPanel.add(scrollPane);
-        rightPanel.add(scrollPane, BorderLayout.CENTER);
+        itemList.setBackground(new Color(30, 30, 30)); // Dark mode default
+        itemList.setForeground(Color.WHITE); // Dark mode default
+        itemScrollPane = new JScrollPane();
+        itemScrollPane.setViewportView(itemList);
+        itemScrollPane.setBorder(null);
+        itemPanel.add(itemScrollPane);
+        rightPanel.add(itemScrollPane, BorderLayout.CENTER);
 
 
 
@@ -630,7 +668,7 @@ public class Main {
                 itemPanel.repaint();
 
                 // auto-scroll to bottom
-                JScrollBar vert = scrollPane.getVerticalScrollBar();
+                JScrollBar vert = itemScrollPane.getVerticalScrollBar();
                 vert.setValue(vert.getMaximum());
 
                 inputField.setText("");
@@ -679,8 +717,8 @@ public class Main {
             }
         });
 
-        // Also add click listener to scrollPane for otem list
-        scrollPane.addMouseListener(new java.awt.event.MouseAdapter() {
+        // Also add click listener to itemScrollPane for item list
+        itemScrollPane.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 if (selected instanceof Item && selectedSourceTier != null) {
