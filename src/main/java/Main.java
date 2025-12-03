@@ -692,6 +692,69 @@ public class Main {
                 }
             }
         });
+        itemList.addMouseListener(new java.awt.event.MouseAdapter() { //double clicking an item in the list to rename it in a dialog box
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int index = itemList.locationToIndex(e.getPoint());
+                    if (index != -1) {
+                        String oldName = listModel.getElementAt(index);
+                        String newName = (String) JOptionPane.showInputDialog(
+                            frame,
+                            "Edit item name:",
+                            "Rename Item",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            null,
+                            oldName
+                        );
+                        if (newName != null) {
+                            newName = newName.trim();
+                            if (!newName.isEmpty() && !newName.equals(oldName)) {
+                                Item item = items.searchItem(oldName);
+                                if (item != null) {
+                                    item.name = newName;
+                                }
+                                listModel.setElementAt(newName, index);
+                                refreshTierList();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        itemList.addKeyListener(new java.awt.event.KeyAdapter() { //pressing enter on an item in the list also allows you to rename it in a dialog box (same as double clicking)
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                    int index = itemList.getSelectedIndex();
+                    if (index != -1) {
+                        String oldName = listModel.getElementAt(index);
+                        String newName = (String) JOptionPane.showInputDialog(
+                            frame,
+                            "Edit item name:",
+                            "Rename Item",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            null,
+                            oldName
+                        );
+                        if (newName != null) {
+                            newName = newName.trim();
+                            if (!newName.isEmpty() && !newName.equals(oldName)) {
+                                Item item = items.searchItem(oldName);
+                                if (item != null) {
+                                    item.name = newName;
+                                }
+                                listModel.setElementAt(newName, index);
+                                refreshTierList();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
 
         // Click listener on roght panel to send tier items back to item list
         rightPanel.addMouseListener(new java.awt.event.MouseAdapter() {
